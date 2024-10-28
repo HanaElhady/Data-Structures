@@ -1,0 +1,135 @@
+public class Main {
+    public static void main(String[] args) {
+        SortedArray srt = new SortedArray(5);
+        srt.insert(1);
+        srt.print();               // 1
+        srt.insert(5);
+        srt.print();              // 1 5
+        srt.insert(3);
+        srt.print();             // 1 3 5
+        srt.delete(3);
+        srt.print();            // 1 5
+        srt.delete(10);
+        srt.print();            // Not found 1 5
+        srt.delete(1);
+        srt.print();           // 5
+        srt.delete(5);
+        srt.print();          //
+        srt.delete(1);
+
+        srt.insert(5);
+        srt.insert(1);
+        srt.insert(2);
+        srt.insert(2);
+        srt.insert(2);
+        srt.print();
+        System.out.println(srt.binarySearchFirstOccurrence(2));  // 2
+        System.out.println(srt.binarySearchLastOccurrence(2));  // 4
+
+    }
+    public static class SortedArray {
+        public int[] arr;
+        public int maxSize;
+        public int arrLength;
+        public SortedArray(int arrLength) {
+            this.arrLength = arrLength;
+            this.arr = new int[arrLength];
+            this.maxSize =0;
+        }
+        public int binarySearch (int x ) {
+            int high = maxSize-1 ;
+            int low = 0;
+            while(low <= high ){
+                int mid = (high + low )/2;
+                int mid_value = arr[mid];
+                if(mid_value < x ) {
+                    low = mid+1;
+                }
+                else if (mid_value > x ) {
+                    high = mid-1;
+                }
+                else {
+                    return mid;
+                }
+            }
+            return -1;
+        }
+        public int binarySearchFirstOccurrence(int x) {
+            int low = 0;
+            int high = maxSize - 1;
+            int result = -1; // To store the index of the first occurrence
+
+            while (low <= high) {
+                int mid = (high + low) / 2;
+                int midValue = arr[mid];
+
+                if (midValue < x) {
+                    low = mid + 1;
+                } else if (midValue > x) {
+                    high = mid - 1;
+                } else {
+                    // When midValue == x, record the result and move left
+                    result = mid; // Found x, record the index
+                    high = mid - 1; // Continue searching in the left half
+                }
+            }
+            return result+1; // Returns the index of the first occurrence or -1 if not found
+        }
+        public int binarySearchLastOccurrence(int x) {
+            int low = 0;
+            int high = maxSize - 1;
+            int result = -1;
+
+            while (low <= high) {
+                int mid = (high + low) / 2;
+                int midValue = arr[mid];
+
+                if (midValue < x) {
+                    low = mid + 1;
+                } else if (midValue > x) {
+                    high = mid - 1;
+                } else {
+                    // When midValue == x, record the result and move right
+                    result = mid; // Found x, record the index
+                    low = mid + 1; // Continue searching in the right half
+                }
+            }
+            return result+1; // Returns the index of the last occurrence or -1 if not found
+        }
+
+        public void insert(int x) {
+            if (maxSize >= arrLength) {
+                System.out.println("Array is full, NO MORE ELEMENTS");
+                return;
+            }
+
+            // Start from the end of the current size and shift elements
+            int i = maxSize;
+            while (i > 0 && arr[i - 1] > x) {
+                arr[i] = arr[i - 1]; // Shift element to the right
+                i--;
+            }
+            arr[i] = x; // Insert the new element
+            maxSize++; // Increase the size of the array
+
+        }
+        public void delete(int x) {
+            int targeted_index = binarySearch(x);
+                if(targeted_index < 0 )  System.out.println("Element not found");
+                else {
+                    maxSize--;
+                    int i = targeted_index;
+                    while (i < maxSize) {
+                        arr[i] = arr[i+1];
+                        i++;
+                    }
+                }
+        }
+         public void print() {
+            for(int i = 0 ; i < maxSize ; i++ ) {
+                System.out.print(arr[i] +" ");
+            }
+             System.out.println();
+         }
+    }
+}
