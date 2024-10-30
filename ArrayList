@@ -1,0 +1,186 @@
+import java.util.Arrays;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("YELLOW");
+        arrayList.add("Green");
+        arrayList.add("BLUE");
+        arrayList.print(); // Output: YELLOW Green BLUE
+        arrayList.insertFirst("Purple");
+        arrayList.print(); // Output: Purple YELLOW Green BLUE
+        System.out.println(arrayList.getElement(1)); // Output: Purple
+        arrayList.add("Blue", 2);
+        arrayList.print(); // Output: Purple Blue YELLOW Green BLUE
+        arrayList.add("Cyan", 1);
+        arrayList.print(); // Output: Cyan Purple Blue YELLOW Green BLUE
+        System.out.println(arrayList.find("Cyan")); // Output: 1
+        arrayList.remove(1);
+        arrayList.print(); // Output: Purple Blue YELLOW Green BLUE
+        arrayList.reverse();
+        arrayList.print(); // Output: BLUE Green YELLOW Purple
+        Object[] arr = arrayList.extract(1, 3);
+        for (Object item : arr) {
+            System.out.print(item + " "); // Output: BLUE Green YELLOW
+        }
+        System.out.println();
+        ArrayList<String> list2 = new ArrayList<>();
+        list2.add("Orange");
+        list2.add("BabyBlue");
+        list2.add("Black");
+        arrayList.join(list2);
+        arrayList.print();                // Output: BLUE Green YELLOW Blue Purple Orange BabyBlue Black
+        System.out.println(arrayList.length()); // Output : 8
+        System.out.println(arrayList.compare(list2));         //Output : false
+        System.out.println(arrayList.compare(arrayList));         //Output : true
+        arrayList.shuffle();
+        arrayList.print();
+        arrayList.empty();
+        arrayList.print(); // Output:
+        System.out.println(arrayList.isEmpty()); // Output: true
+    }
+
+    public static class ArrayList<T> {
+        private int lenOfTheArray;
+        private T[] arr;
+        private int maxElements;
+
+        public ArrayList(int size) {
+            this.lenOfTheArray = size;
+            this.arr = (T[]) new Object[size];
+            this.maxElements = 0;
+        }
+
+        public ArrayList() {
+            this(1);
+        }
+
+        public void add(T element) {
+            if (maxElements >= lenOfTheArray) {
+                resize();
+            }
+            arr[maxElements++] = element;
+        }
+
+        public void add(T element, int index) {
+            if (index < 1 || index > maxElements + 1) {
+                throw new IndexOutOfBoundsException("Index out of bounds");
+            }
+            if (maxElements >= lenOfTheArray) {
+                resize();
+            }
+            for (int i = maxElements; i >= index; i--) {
+                arr[i] = arr[i - 1];
+            }
+            arr[index - 1] = element;
+            maxElements++;
+        }
+
+        public void resize() {
+            T[] newArr = (T[]) new Object[lenOfTheArray * 2];
+            System.arraycopy(arr, 0, newArr, 0, maxElements);
+            arr = newArr;
+            lenOfTheArray = newArr.length;
+        }
+
+        public void print() {
+            for (int i = 0; i < maxElements; i++) {
+                System.out.print(arr[i] + " ");
+            }
+            System.out.println();
+        }
+
+        public void insertFirst(T element) {
+            add(element, 1);
+        }
+
+        public T getElement(int index) {
+            if (index < 1 || index > maxElements) {
+                throw new IndexOutOfBoundsException("Index out of bounds");
+            }
+            return arr[index - 1];
+        }
+
+        public int find(T element) {
+            for (int i = 0; i < maxElements; i++) {
+                if (arr[i].equals(element)) return i + 1;
+            }
+            return -1;
+        }
+
+        public void remove(int index) {
+            if (index < 1 || index > maxElements) {
+                throw new IndexOutOfBoundsException("Index out of bounds");
+            }
+            for (int i = index - 1; i < maxElements - 1; i++) {
+                arr[i] = arr[i + 1];
+            }
+            maxElements--;
+            if (maxElements < lenOfTheArray / 4) shrink();
+        }
+
+        public void shrink() {
+            if (lenOfTheArray <= 1) return;
+            T[] newArr = (T[]) new Object[lenOfTheArray / 2];
+            System.arraycopy(arr, 0, newArr, 0, maxElements);
+            arr = newArr;
+            lenOfTheArray = newArr.length;
+        }
+
+        public void empty() {
+            arr = (T[]) new Object[1]; // Reset to default size
+            maxElements = 0;
+        }
+
+        public boolean isEmpty() {
+            return maxElements == 0;
+        }
+
+        public void reverse() {
+            for (int i = 0; i < maxElements / 2; i++) {
+                T temp = arr[i];
+                arr[i] = arr[maxElements - 1 - i];
+                arr[maxElements - 1 - i] = temp;
+            }
+        }
+
+        public T[] extract(int start, int end) {
+            if (start < 1 || end > maxElements || start > end) {
+                throw new IndexOutOfBoundsException("Invalid range");
+            }
+            T[] arrExtracted = (T[]) new Object[end - start + 1];
+            for (int i = 0; i < arrExtracted.length; i++) {
+                arrExtracted[i] = arr[start - 1 + i];
+            }
+            return arrExtracted;
+        }
+
+        public int length() {
+            return maxElements;
+        }
+        public boolean compare(ArrayList<T> arrCompare) {
+            if (arrCompare.maxElements != this.maxElements) return false;
+            for (int i = 0; i < maxElements; i++) {
+                if (!arr[i].equals(arrCompare.arr[i])) return false;
+            }
+            return true;
+        }
+
+        public void join(ArrayList<T> arr2) {
+            for (int i = 0; i < arr2.maxElements; i++) {
+                add(arr2.arr[i]);
+            }
+        }
+        public void shuffle() {
+            Random random = new Random();
+            for (int i = maxElements - 1; i > 0; i--) {
+                int j = random.nextInt(i + 1);
+                T temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+
+    }
+}
