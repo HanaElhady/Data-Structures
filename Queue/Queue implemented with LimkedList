@@ -1,0 +1,70 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+    }
+}
+
+    class  Node<T> {
+        T value;
+        Node<T> next;
+        Node<T> previous;
+
+        Node(T value) {
+        this.value = value;
+        this.next = null;
+        this.previous = null;
+    }
+    }
+
+    class  DoublyLinkedList<T> {
+        Node<T> head;
+        Node<T> tail;
+
+        DoublyLinkedList() {
+            this.head = null;
+            this.tail = null;
+        }
+
+        public void insert_from_end(T data) {
+            Node<T> newNode = new Node<>(data);
+            if(head == null) {
+                head = tail = newNode;
+            }
+            else {
+                tail.next = newNode;
+                newNode.previous = tail;
+                tail = newNode;
+            }
+        }
+        public void remove_First() {
+            if(head == null ) {
+                System.out.println("LinkedList is empty!");
+            }
+            else {
+                head = head.next;
+                if (head != null) {
+                    head.previous = null;
+                } else {
+                    tail = null;
+                }
+            }
+        }
+
+    }
+class Queue<T> {
+    private DoublyLinkedList<T> queue;
+    //First in First out
+    // enqueue ---->  tail (insert from end)
+    // dequeue ----> head (remove first)
+    Queue() {
+        queue = new DoublyLinkedList<>();
+    }
+    public void enqueue(T data) {
+        queue.insert_from_end(data);
+    }
+    public void dequeue() {
+        queue.remove_First();
+    }
+}
