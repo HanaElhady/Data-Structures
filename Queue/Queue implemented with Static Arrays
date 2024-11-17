@@ -1,0 +1,120 @@
+class Array<T> {
+    int max_size;
+    int max_elements;
+    T[] arr;
+
+    Array(int max_size) {
+        this.max_size = max_size;
+        this.max_elements = 0;
+        arr = (T[]) new Object[max_size];
+    }
+
+    void add(int index, T value) {
+        if (isFull()) {
+            System.out.println("Array is full");
+        } else {
+            arr[index] = value;
+            max_elements++;
+        }
+    }
+
+    void remove(int index) {
+        if (isEmpty()) {
+            System.out.println("Array is empty");
+        } else {
+            arr[index] = null;
+            max_elements--;
+        }
+    }
+
+    boolean isEmpty() {
+        return max_elements == 0;
+    }
+
+    boolean isFull() {
+        return max_elements == max_size;
+    }
+}
+class Queue<T> {
+    private Array<T> circular_queue;
+    private int front;
+    private int rear;
+
+    Queue(int size) {
+        circular_queue = new Array<>(size);
+        front = -1;
+        rear = -1;
+    }
+
+    public void enqueue(T date) {
+        if (circular_queue.isFull()) {
+            System.out.println("Queue is full");
+            return;
+        }
+
+        if (front == -1) {
+            front = 0;
+        }
+
+        rear = (rear + 1) % circular_queue.max_size;
+        circular_queue.add(rear, date);
+    }
+
+    public void dequeue() {
+       if(circular_queue.isEmpty()) {
+           System.out.println("Queue is empty");
+           return;
+       }
+        circular_queue.remove(front);
+        if (front == rear) { // Queue becomes empty
+            front = -1;
+            rear = -1;
+        }
+        else front = (front + 1) % circular_queue.max_size;
+
+    }
+
+
+    public boolean isEmpty() {
+        return circular_queue.isEmpty();
+    }
+
+    public boolean isFull() {
+        return circular_queue.isFull();
+    }
+
+    public void display() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty");
+            return;
+        }
+        System.out.print("Queue elements: ");
+        int i = front;
+        do {
+            System.out.print(circular_queue.arr[i] + " ");
+            i = (i + 1) % circular_queue.max_size;
+        } while (i != (rear + 1) % circular_queue.max_size);
+        System.out.println();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Queue<Integer> queue = new Queue<>(5);
+
+        queue.enqueue(10);
+        queue.enqueue(20);
+        queue.enqueue(30);
+        queue.enqueue(40);
+        queue.enqueue(50);
+        queue.enqueue(60); // Should display "Queue is full"
+
+        queue.display();
+
+        queue.dequeue();
+        queue.dequeue();
+        queue.display();
+        queue.enqueue(60);
+        queue.display();
+    }
+}
