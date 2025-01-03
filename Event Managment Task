@@ -1,0 +1,138 @@
+import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+class Task implements Comparable<Task> {
+    String name;
+    LocalDateTime deadline;
+
+    public Task(String name, String deadline) {
+        this.name = name;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        this.deadline = LocalDateTime.parse(deadline, formatter);
+    }
+
+    @Override
+    public int compareTo(Task other) {
+        return this.deadline.compareTo(other.deadline);
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + deadline.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
+}
+
+public class Main {
+    private static Task findTaskByName(PriorityQueue<Task> taskQueue, String taskName) {
+        for (Task task : taskQueue) {
+            if (task.name.equalsIgnoreCase(taskName)) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    private static void deleteFinishedTask(PriorityQueue<Task> taskQueue, String taskName) {
+        Task task = findTaskByName(taskQueue, taskName);
+        if (task != null) {
+            taskQueue.remove(task);
+            System.out.println("❌ Task '" + taskName + "' has been removed.");
+        } else {
+            System.out.println("❌ Task '" + taskName + "' not found.");
+        }
+    }
+
+    private static void updateTaskDeadline(PriorityQueue<Task> taskQueue, String taskName, String newDeadline) {
+        Task task = findTaskByName(taskQueue, taskName);
+        if (task != null) {
+            if (!isValidDeadline(newDeadline)) {
+                System.out.println("❌ Invalid or past deadline. Please enter a valid future date and time.");
+                return;
+            }
+            taskQueue.remove(task);
+            taskQueue.offer(new Task(taskName, newDeadline));
+            System.out.println("✅ Task '" + taskName + "' has been updated to new deadline: " + newDeadline);
+        } else {
+            System.out.println("❌ Task '" + taskName + "' not found.");
+        }
+    }
+
+    private static boolean isValidDeadline(String deadline) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime deadlineDateTime = LocalDateTime.parse(deadline, formatter);
+            return !deadlineDateTime.isBefore(LocalDateTime.now());
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    private static void displayTasks(PriorityQueue<Task> taskQueue) {
+        PriorityQueue<Task> tempQueue = new PriorityQueue<>(taskQueue);
+        while (!tempQueue.isEmpty()) {
+            System.out.println(tempQueue.poll());
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("📋 Let's get things done! 🕒");
+        PriorityQueue<Task> taskQueue = new PriorityQueue<>();
+
+        String command;
+        do {
+            System.out.println("\nEnter a command ('add', 'done', 'update', or 'exit'): ");
+            command = sc.nextLine().trim().toLowerCase();
+            switch (command) {
+                case "add":
+                    System.out.println("Enter your task name: ");
+                    String taskName = sc.nextLine().trim();
+
+                    System.out.println("Enter the deadline (yyyy-MM-dd HH:mm): ");
+                    String deadline = sc.nextLine().trim();
+
+                    if (!isValidDeadline(deadline)) {
+                        System.out.println("❌ Invalid or past deadline. Please enter a valid future date and time.");
+                    } else {
+                        taskQueue.offer(new Task(taskName, deadline));
+                        System.out.println("✅ Task added successfully!");
+                    }
+                    break;
+
+                case "done":
+                    System.out.println("Enter the task name to mark as done: ");
+                    String taskToDelete = sc.nextLine().trim();
+                    deleteFinishedTask(taskQueue, taskToDelete);
+                    break;
+
+                case "update":
+                    System.out.println("Enter the task name to update: ");
+                    String taskToUpdate = sc.nextLine().trim();
+
+                    System.out.println("Enter the new deadline (yyyy-MM-dd HH:mm): ");
+                    String newDeadline = sc.nextLine().trim();
+
+                    updateTaskDeadline(taskQueue, taskToUpdate, newDeadline);
+                    break;
+
+                case "exit":
+                    System.out.println("\n🚀 Processing Tasks in Deadline Order:");
+                    while (!taskQueue.isEmpty()) {
+                        System.out.println(taskQueue.poll());
+                    }
+                    System.out.println("🎉 All tasks processed. Goodbye!");
+                    return;
+
+                default:
+                    System.out.println("❗ Invalid command. Please enter 'add', 'done', 'update', or 'exit'.");
+                    break;
+            }
+
+            System.out.println("\n📜 Current Task Queue (by deadline):");
+            displayTasks(taskQueue);
+        } while (!command.equals("exit"));
+
+    }
+}
