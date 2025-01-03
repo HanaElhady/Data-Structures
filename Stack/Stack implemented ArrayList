@@ -6,8 +6,6 @@ class Stack<E extends Comparable<E>> {
     public Stack() {
         stack = new ArrayList<>();
     }
-
-    // Push an element onto the stack
     public void push(E val) {
         stack.add(val);
     }
