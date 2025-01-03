@@ -1,0 +1,168 @@
+public class NumberOfPairs {
+    public static void main(String[] args) {
+        DoublyCircularLinkedList<Integer> list = new DoublyCircularLinkedList<>();
+
+        // Adding elements using different methods
+        list.addFirst(10);  // Add 10 at the beginning
+        list.addLast(20);   // Add 20 at the end
+        list.addLast(30);   // Add 30 at the end
+        list.addFirst(5);   // Add 5 at the beginning
+
+        // Print list after additions
+        System.out.print("List after additions: ");
+        list.print();
+
+        // Removing elements
+        list.removeFirst();  // Remove the first element (5)
+        System.out.print("List after removeFirst: ");
+        list.print();
+
+        list.removeLast();   // Remove the last element (30)
+        System.out.print("List after removeLast: ");
+        list.print();
+
+        list.remove(0);      // Remove the element at index 0 (10)
+        System.out.print("List after remove(0): ");
+        list.print();
+
+        // Attempt to remove an out-of-bounds index (invalid)
+        list.remove(10);     // Invalid index
+    }
+
+    static class Node<E> {
+        E value;
+        Node<E> next;
+        Node<E> previous;
+
+        Node(E value) {
+            this.value = value;
+            this.next = null;
+            this.previous = null;
+        }
+    }
+
+    static class DoublyCircularLinkedList<E> {
+        Node<E> head;
+        Node<E> tail;
+        int size = 0;
+
+        DoublyCircularLinkedList() {
+            this.head = null;
+            this.tail = null;
+        }
+
+        // Insert element at the end
+        public void insert(E element) {
+            Node<E> newNode = new Node<>(element);
+            if (size == 0) {
+                head = tail = newNode;
+                newNode.next = head;
+                newNode.previous = tail;
+            } else {
+                newNode.previous = tail;
+                newNode.next = head;
+                tail.next = newNode;
+                head.previous = newNode;
+                tail = newNode;
+            }
+            size++;
+        }
+
+        // Add element to the beginning
+        public void addFirst(E element) {
+            Node<E> newNode = new Node<>(element);
+
+            if (size == 0) {
+                head = tail = newNode;
+                newNode.next = head;
+                newNode.previous = tail;
+            } else {
+                newNode.next = head;
+                newNode.previous = tail;
+                head.previous = newNode;
+                tail.next = newNode;
+                head = newNode;
+            }
+            size++;
+        }
+
+        // Add element to the end
+        public void addLast(E element) {
+            insert(element);
+        }
+
+        // Remove the first element
+        public void removeFirst() {
+            if (size != 0) {
+                if (size == 1) {
+                    head = tail = null;  // List becomes empty
+                } else {
+                    head = head.next;
+                    head.previous = tail;
+                    tail.next = head;
+                }
+                size--;
+            }
+        }
+
+        // Remove the last element
+        public void removeLast() {
+            if (size != 0) {
+                if (size == 1) {
+                    head = tail = null;  // List becomes empty
+                } else {
+                    tail = tail.previous;
+                    tail.next = head;
+                    head.previous = tail;
+                }
+                size--;
+            }
+        }
+
+        // Remove element at the specified index
+        public void remove(int index) {
+            if (index < 0 || index >= size) {
+                System.out.println("Index out of bounds.");
+                return;
+            }
+
+            if (index == 0) {
+                removeFirst();
+                return;
+            }
+
+            if (index == size - 1) {
+                removeLast();
+                return;
+            }
+
+            Node<E> current = head;
+            int count = 0;
+            while (count < index) {
+                current = current.next;
+                count++;
+            }
+
+            if (current.previous != null && current != null) {
+                current.previous.next = current.next;
+                current.next.previous = current.previous;
+                size--;
+            }
+        }
+
+        // Print the list
+        public void print() {
+            if (head == null) {
+                System.out.println("List is empty.");
+                return;
+            }
+
+            Node<E> current = head;
+            do {
+                System.out.print(current.value + " ");
+                current = current.next;
+            } while (current != head);  // Loop until we reach the head again
+            System.out.println();
+        }
+    }
+}
