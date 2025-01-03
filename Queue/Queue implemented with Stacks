@@ -1,0 +1,80 @@
+import java.util.Stack;
+
+public class NumberOfPairs {
+    public static void main(String[] args) {
+        Queue<Integer> queue = new Queue<>();
+
+        // Enqueue elements
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+
+        // Dequeue an element
+        System.out.println("Dequeued: " + queue.dequeue());
+
+        // Peek at the front element
+        System.out.println("Peek: " + queue.peek());
+
+        // Check if the queue is empty
+        System.out.println("Is queue empty? " + queue.isEmpty());
+
+        // Dequeue remaining elements
+        System.out.println("Dequeued: " + queue.dequeue());
+        System.out.println("Dequeued: " + queue.dequeue());
+
+        // Attempt to dequeue from empty queue
+        System.out.println("Dequeued from empty queue: " + queue.dequeue());
+    }
+
+    static class Queue<E> {
+        Stack<E> stack_1;
+        Stack<E> stack_2;
+
+        Queue() {
+            stack_1 = new Stack<>();
+            stack_2 = new Stack<>();
+        }
+
+        // Enqueue element into stack_1
+        public void enqueue(E element) {
+            stack_1.push(element);
+        }
+
+        // Dequeue an element from stack_2, transfer if empty
+        public E dequeue() {
+            if (stack_2.isEmpty()) {
+                while (!stack_1.isEmpty()) {
+                    stack_2.push(stack_1.pop());  // Transfer elements from stack_1 to stack_2
+                }
+            }
+
+            if (stack_2.isEmpty()) {
+                System.out.println("Queue is empty");
+                return null;  // Return null if the queue is empty
+            }
+
+            return stack_2.pop();
+        }
+
+        // Check if the queue is empty
+        public boolean isEmpty() {
+            return stack_1.isEmpty() && stack_2.isEmpty();
+        }
+
+        // Peek at the front element from stack_2, transfer if empty
+        public E peek() {
+            if (stack_2.isEmpty()) {
+                while (!stack_1.isEmpty()) {
+                    stack_2.push(stack_1.pop());  // Transfer elements from stack_1 to stack_2
+                }
+            }
+
+            if (stack_2.isEmpty()) {
+                System.out.println("Queue is empty");
+                return null;  // Return null if the queue is empty
+            }
+
+            return stack_2.peek();
+        }
+    }
+}
